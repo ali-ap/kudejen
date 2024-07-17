@@ -1,10 +1,14 @@
 # kudejen
 
-This application simple application which serves a gRPC server that interacts with a running kubernetes cluster. As of now the gRPC server provides a simple API for provisioning postgres databases, allowing clients to perform CRUD (Create, Read, Update, Delete) operations. This setup leverages a running Kubernetes.
+This simple application is a gRPC server that interacts with a running Kubernetes cluster. Currently, the gRPC server provides a simple API for provisioning Postgres databases, allowing clients to perform CRUD (Create, Read, Update, Delete) operations. This setup leverages a running Kubernetes.
+
+
+## Contributing
+**Having spent about 3–4 hours on this project, I am sure several more functionalities such as having a database, caching, scaling the database, user management, logging, and enhanced security measures like role-based access control (RBAC), more tests, integration test, better input validation and so on can be added with more time. Please let us know if there is a certain feature or functionality you want to be included. We welcome pull requests. If you have any comments or improvement requests, please let me know, and I will make the changes as soon as possible.**
 
 ## Installation
 
-there is already a Makefile containing all the necessary commands.
+There is already a Makefile containing all the necessary commands.
 
 ## Makefile
 
@@ -39,7 +43,7 @@ For Running The application.
 ```bash
 make docker-run
 ```
-This will open port 8080 for grpc and port 8081 for http on your local machine. if you want to change this ports you can achieve that in config file located src/internal/config/config.yml, just be sure that you have to change the port binding in docker-run command as well.
+This will open port 8080 for gRPC and port 8081 for HTTP on your local machine. If you want to change these ports you can achieve that in the config file located src/internal/config/config.yml, just be sure that you have to change the port binding in the docker-run command as well.
 
 the docker image uses a non-root user ro run the application.
 
@@ -68,12 +72,12 @@ Kubernetes communication requires the kube.config file, located in "src/internal
 
 Using a kubeconfig file is the easiest and most common approach.
 KUBECONFIG can be set as an environment variable or loaded explicitly.
-However, it is less secure (environment is variable) and offers limited control.
+However, it is less secure (the environment is variable) and offers limited control.
 
 Kubernetes communication requires the kube.config file, located in "src/internal/config/kube.config". Using this method is not the best method for connecting to Kubernetes.
 Using a kubeconfig file is the easiest and most common approach.
 KUBECONFIG can be set as an environment variable or loaded explicitly.
-However, it is less secure (environment is variable) and offers limited control.
+However, it is less secure (the environment is variable) and offers limited control.
 
 there other better alternative but since it needs more assumption on the cluster that the application is going to run on.**"However, it falls outside the scope of our current project."**
 
@@ -90,7 +94,7 @@ kubectl config view --minify --raw > kube.config
 
 ## Usage
 
-when the application is up and running 2 port will be available on your designated domain(localhost). one for http server (:8081/) and another for grpc server (:/8080/)
+When the application is up and running 2 port will be available on your designated domain(localhost). One for HTTP server (:8081/) and another for gRPC server (:/8080/)
 
 there are some approach to create api documentation for grpc servers but **"However, it falls outside the scope of our current project."**
 
@@ -106,7 +110,7 @@ there are some approach to create api documentation for grpc servers but **"Howe
 ## Available Endpoints 
 
 #### gRPC
-all gRPC endpoint requires a bearer token. as of now and only for dake of this project it is hardcoded to "i am not a hacker!" and later on it should be change to a proper Oauth/OIDC verification!
+All gRPC endpoint requires a bearer token. As of now and only for the sake of simplicity of this project, it is hard-coded to "i am not a hacker!" and later on it should be changed to a proper OAuth/OIDC verification!
 
 
 the input validation is manual right now but input should thoroughly validate gRPC request data types, formats, ranges, and business rules to ensure data integrity and prevent security vulnerabilities.
@@ -182,9 +186,61 @@ if you want to connect the postgres database which has been created, don't forge
 kubectl port-forward -n default svc/service-name 5432:5432
 ```
 
-## Contributing
-Pull requests are welcome. feel free to add comments and improvement request and I will change them ASAP.
+## Diagram
 
+```
+                              +----------------------------------------+
+                              |                                        |
+                              |            Client                      |
+                   -----------|                                        |
+                  |           +--------------------^-------------------+
+                  |                                |
+                  |                                | gRPC
+                  |                                |
+                  |                                |
+                  | HTTP                           |    
+                  |                                |
+                  v                                |
++----------------+-----------------------+         |
+|                                        |         |
+|        HTTP Endpoints                  |         |
+| (Metrics and Health Checks)            |         |
+|                                        |         |
++----------------^-----------------------+         v
++-----------------------------------------------------------------------+
+|                                                                       |
+|                     kudejen                                           |
+|                                                                       |
+|  +--------------------+   +---------------------+  +----------------+ |
+|  | gRPC Interface     |   | Kubernetes Resource |  | Authentication | |
+|  |                    |   | Management          |  | and Security   | |
+|  +--------------------+   +---------------------+  +----------------+ |
+|                                                                       |
+|    +----------------+        +---------------------+    +---------+   |
+|    | Metrics (HTTP) |        | Health Checks (HTTP)|   | Logging  |   |
+|    +----------------+        +---------------------+    +---------+   |
+|                                                                       |
++-----------------------^----------------^-----------------^------------+
+                        |                |                 
+                        |                |                 
+                        |                |                 
+                        v                v                 
+           +-------------------+ +---------------------+ 
+           |                   | |                     | 
+           | Kubernetes API    | | Prometheus/Grafana  | 
+           | Server            | | (Monitoring)        | 
+           |                   | |                     | 
+           +-------------------+ +---------------------+
+                        |
+                        v
+            +----------------------------------------------------------+
+            |                          K8S                             |
+            |     +----------------+      +----------------+           |
+            |     |  postgres pods |      |  postgres pods |           |
+            |     +----------------+      +----------------+           |
+            +----------------------------------------------------------+
+
+```
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
