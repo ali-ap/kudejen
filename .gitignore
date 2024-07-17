@@ -1,0 +1,48 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with 'go test -c'
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below if you plan to use dep)
+# vendor/
+
+# Go binary files
+bin/
+*.o
+
+# Go source files backup
+*~
+
+# Go binaries backup
+.idea/
+
+# Compiled Object files, Static and Dynamic libs (Unix-like)
+*.o
+*.a
+*.so
+
+# Local configuration file (rename it as needed)
+#config.json
+
+# Log files
+*.log
+
+# IDE-specific files
+.idea/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Linux
+*.swp

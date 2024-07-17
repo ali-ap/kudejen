@@ -1,0 +1,4 @@
+application:
+  grpc-port: :8080
+  http-port: :8081
+  version: 0.0.1
